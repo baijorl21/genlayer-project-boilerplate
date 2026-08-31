@@ -104,3 +104,4 @@ class AgentReputation(gl.Contract):
             "contributions": agent.contributions,
             "active": agent.active,
         }
+# CI test
