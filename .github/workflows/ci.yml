@@ -5,11 +5,13 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   lint-contracts:
     name: Lint Contracts
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -25,6 +27,7 @@ jobs:
   test-direct:
     name: Direct Mode Tests
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -33,4 +36,5 @@ jobs:
           python-version: "3.12"
 
       - run: pip install -r requirements.txt
+
       - run: pytest tests/direct/ -v
