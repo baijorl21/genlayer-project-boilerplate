@@ -1,10 +1,12 @@
-
 # { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
+
+from dataclasses import dataclass
 
 from genlayer import *
 
 
 @allow_storage
+@dataclass
 class AgentProfile:
     name: str
     reputation: u256
@@ -24,39 +26,39 @@ class AgentReputation(gl.Contract):
         sender = gl.message.sender_address
 
         if sender in self.agents:
-            raise Exception("Agent already registered")
+            raise gl.vm.UserError("Agent already registered")
 
         self.agents[sender] = AgentProfile(
             name=name,
-            reputation=0,
-            total_rewards=0,
-            contributions=0,
+            reputation=u256(0),
+            total_rewards=u256(0),
+            contributions=u256(0),
             active=True,
         )
 
     @gl.public.write
-    def add_contribution(self, points: int) -> None:
+    def add_contribution(self, points: u256) -> None:
         sender = gl.message.sender_address
 
         if sender not in self.agents:
-            raise Exception("Agent is not registered")
+            raise gl.vm.UserError("Agent is not registered")
 
-        if points <= 0:
-            raise Exception("Points must be greater than zero")
+        if points <= u256(0):
+            raise gl.vm.UserError("Points must be greater than zero")
 
         agent = self.agents[sender]
         agent.contributions += points
         agent.reputation += points
 
     @gl.public.write
-    def reward_agent(self, amount: int) -> None:
+    def reward_agent(self, amount: u256) -> None:
         sender = gl.message.sender_address
 
         if sender not in self.agents:
-            raise Exception("Agent is not registered")
+            raise gl.vm.UserError("Agent is not registered")
 
-        if amount <= 0:
-            raise Exception("Reward must be greater than zero")
+        if amount <= u256(0):
+            raise gl.vm.UserError("Reward must be greater than zero")
 
         self.agents[sender].total_rewards += amount
 
@@ -65,7 +67,7 @@ class AgentReputation(gl.Contract):
         sender = gl.message.sender_address
 
         if sender not in self.agents:
-            raise Exception("Agent is not registered")
+            raise gl.vm.UserError("Agent is not registered")
 
         self.agents[sender].active = False
 
@@ -74,7 +76,7 @@ class AgentReputation(gl.Contract):
         address = Address(agent_address)
 
         if address not in self.agents:
-            raise Exception("Agent not found")
+            raise gl.vm.UserError("Agent not found")
 
         agent = self.agents[address]
 
@@ -92,7 +94,7 @@ class AgentReputation(gl.Contract):
         sender = gl.message.sender_address
 
         if sender not in self.agents:
-            raise Exception("Agent is not registered")
+            raise gl.vm.UserError("Agent is not registered")
 
         agent = self.agents[sender]
 
